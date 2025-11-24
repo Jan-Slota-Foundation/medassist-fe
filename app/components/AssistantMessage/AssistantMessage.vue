@@ -29,12 +29,8 @@ const getMessageSegments = (message: ChatMessage) => {
       </UBadge>
       <span v-else>{{ segment }}</span>
     </template>
-    <UButton
-      v-if="message.role === 'assistant'"
-      class="flex"
-      label="Explain to patient"
-      size="xs"
-      variant="soft"
-    />
+    <div class="flex gap-2 mt-2" v-if="message.role === 'assistant'">
+      <slot name="actions" />
+    </div>
   </span>
 </template>

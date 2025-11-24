@@ -1,4 +1,7 @@
 <script setup lang="ts">
+const user = useSupabaseUser();
+console.log(user);
+
 const navigationItems = [
   {
     label: "Chat",
@@ -22,7 +25,7 @@ const navigationItems = [
   <UDashboardGroup display="grid" grid-template-columns="250px 1fr">
     <UDashboardSidebar>
       <template #header>
-        <UUser name="John Doe" description="Doctor" />
+        <UUser :name="user?.email ?? 'Anonymous'" description="Doctor" />
       </template>
       <template #default>
         <USeparator />
