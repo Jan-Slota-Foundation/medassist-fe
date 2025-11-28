@@ -1,0 +1,13 @@
+{
+  "chat": {
+    "title": "Četujte s asistentem",
+    "placeholder": "Vaše otázka jde sem...",
+    "speechToText": "Komunikace pomocí hlasu"
+  },
+
+  "navigation": {
+    "chat": "Čet",
+    "documents": "Dokumenty",
+    "settings": "Nastavení"
+  }
+}

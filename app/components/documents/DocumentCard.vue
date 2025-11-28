@@ -9,7 +9,7 @@ interface DocumentItem {
   updated_at: string;
   created_at: string;
   last_accessed_at: string;
-  metadata: any;
+  metadata: Record<string, unknown>;
 }
 
 defineProps<{
@@ -18,8 +18,8 @@ defineProps<{
 </script>
 <template>
   <UCard
-    @click="navigateTo(`/documents/${document.name}`)"
     class="cursor-pointer"
+    @click="navigateTo(`/documents/${document.name}`)"
   >
     <template #header>
       <h3 class="font-semibold truncate">
@@ -32,7 +32,8 @@ defineProps<{
     <div class="text-sm text-gray-600">
       <p>File ID: {{ document.id }}</p>
       <p v-if="document.metadata?.size">
-        Size: {{ (document.metadata.size / 1024 / 1024).toFixed(2) }} MB
+        Size:
+        {{ ((document.metadata.size as number) / 1024 / 1024).toFixed(2) }} MB
       </p>
     </div>
 

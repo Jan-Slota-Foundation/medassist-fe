@@ -8,20 +8,43 @@ const { data: cachedDocuments } = useNuxtData<FileObject[]>(`remoteDocuments`);
 
 const cachedDocument = computed(() => {
   return cachedDocuments.value?.find(
-    (document: FileObject) => document.name === filename
+    (document: FileObject & { bucket?: string }) => document.name === filename
   );
 });
 
 const { data: documentInfo, pending: documentInfoPending } = useLazyAsyncData(
   `remoteDocument-${filename}`,
   async () => {
-    const { data, error: SupabaseStorageError } = await supabase.storage
-      .from("documents")
-      .list("", { search: filename as string });
-    if (SupabaseStorageError) {
-      throw new Error(SupabaseStorageError.message);
+    // If we have the document cached with bucket info, use that bucket
+    if ((cachedDocument.value as FileObject & { bucket?: string })?.bucket) {
+      const { data, error: SupabaseStorageError } = await supabase.storage
+        .from((cachedDocument.value as FileObject & { bucket: string }).bucket)
+        .list("", { search: filename as string });
+      if (SupabaseStorageError) {
+        throw new Error(SupabaseStorageError.message);
+      }
+      return data?.[0];
     }
-    return data?.[0];
+
+    // Fallback: search across all known buckets if not cached
+    const buckets = [
+      "pracovni_cesty",
+      "zhodnoceni_procesu",
+      "organizacni_rady",
+    ];
+    for (const bucket of buckets) {
+      const { data, error: SupabaseStorageError } = await supabase.storage
+        .from(bucket)
+        .list("", { search: filename as string });
+      if (SupabaseStorageError) {
+        continue; // Try next bucket
+      }
+      if (data && data.length > 0) {
+        return data[0];
+      }
+    }
+
+    throw new Error(`Document ${filename} not found in any bucket`);
   }
 );
 

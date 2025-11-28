@@ -1,0 +1,8 @@
+{
+  "chat": {
+    "title": "Chat",
+    "description": "Chat with us",
+    "placeholder": "Ask a question",
+    "submit": "Send"
+  }
+}

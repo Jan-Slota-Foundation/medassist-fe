@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { getTextFromMessage } from "@nuxt/ui/utils/ai";
-
-type ChatMessage = Parameters<typeof getTextFromMessage>[0];
-
 defineProps<{
   messageText: string;
 }>();

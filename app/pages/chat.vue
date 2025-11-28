@@ -2,22 +2,10 @@
 import { getTextFromMessage } from "@nuxt/ui/utils/ai";
 import CopyToClipboard from "~/components/AssistantMessage/actions/CopyToClipboard.vue";
 import ExplainToPatientButton from "~/components/AssistantMessage/actions/ExplainToPatientButton.vue";
-const messages = ref<any[]>([]);
+import TextToVoiceButton from "~/components/AssistantMessage/actions/TextToVoiceButton.vue";
+import useChat from "~/composables/useChat";
 
-const messageInput = ref("");
-
-const clearInput = () => {
-  messageInput.value = "";
-};
-
-const handleSubmit = (message: string) => {
-  messages.value.push({
-    id: crypto.randomUUID(),
-    role: "user",
-    parts: [{ type: "text", text: message }],
-  });
-  clearInput();
-};
+const { messages, messageInput, handleSubmit } = useChat();
 </script>
 
 <template>
@@ -37,37 +25,28 @@ const handleSubmit = (message: string) => {
           <template #content="{ message }">
             <AssistantMessage :message="message">
               <template #actions>
-                <ExplainToPatientButton :message="message" />
-                <CopyToClipboard :messageText="getTextFromMessage(message)" />
+                <ExplainToPatientButton
+                  :message-text="getTextFromMessage(message)"
+                />
+                <CopyToClipboard :message-text="getTextFromMessage(message)" />
+                <TextToVoiceButton
+                  :message-text="getTextFromMessage(message)"
+                />
               </template>
             </AssistantMessage>
           </template>
         </UChatMessages>
 
         <div v-else class="flex flex-col gap-14 mt-28">
-          <h1 class="text-4xl font-semibold text-center">Ask away!</h1>
+          <h1 class="text-4xl font-semibold text-center">
+            {{ $t("chat.title") }}
+          </h1>
           <UPageGrid>
-            <UCard>
-              <p>
-                Pacient na pokoji 312 jde zítra na kolonoskopii. Můžeš mi
-                připomenout přesné kroky přípravy podle našich nemocničních
-                pokynů?
-              </p>
-            </UCard>
-            <UCard>
-              <p>
-                Kde najdu aktuální doporučení pro podání nízkomolekulárního
-                heparinu u pacienta s renálním selháním?
-              </p>
-            </UCard>
-
-            <UCard>
-              <p>
-                Potřebuju rychle najít, jaký je přesný postup při podezření na
-                sepsi podle našich interních směrnic. Jaké jsou první kroky a
-                jaké odběry se mají udělat do 30 minut?
-              </p>
-            </UCard>
+            <ExamplePromptCard
+              v-for="prompt in getExamplePrompts()"
+              :key="prompt"
+              :example-prompt-text="prompt"
+            />
           </UPageGrid>
         </div>
       </UContainer>
@@ -75,11 +54,21 @@ const handleSubmit = (message: string) => {
 
     <template #footer>
       <UChatPrompt
-        variant="outline"
         v-model="messageInput"
+        :placeholder="$t('chat.placeholder')"
+        variant="outline"
         @submit="handleSubmit(messageInput)"
       >
-        <UChatPromptSubmit />
+        <div class="flex items-center gap-2">
+          <UTooltip :text="$t('chat.speechToText')" position="top">
+            <UButton
+              icon="i-heroicons-microphone"
+              variant="ghost"
+              color="neutral"
+            />
+          </UTooltip>
+          <UChatPromptSubmit />
+        </div>
       </UChatPrompt>
     </template>
   </UDashboardPanel>
