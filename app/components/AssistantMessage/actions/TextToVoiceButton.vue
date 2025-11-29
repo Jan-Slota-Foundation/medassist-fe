@@ -16,7 +16,8 @@ const handleClick = (messageText: string) => {
       class="flex"
       icon="i-heroicons-speaker-wave"
       size="xs"
-      variant="soft"
+      variant="ghost"
+      color="neutral"
       :loading="status === 'speaking'"
       @click="handleClick(messageText)"
     />

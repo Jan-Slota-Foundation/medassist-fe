@@ -9,5 +9,10 @@
     "chat": "Čet",
     "documents": "Dokumenty",
     "settings": "Nastavení"
+  },
+
+  "documents": {
+    "updated-at": "Naposledy aktualizováno: {date}",
+    "size": "Velikost: {size} MB"
   }
 }

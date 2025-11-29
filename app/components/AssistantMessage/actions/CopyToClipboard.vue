@@ -13,7 +13,8 @@ const copyToClipboard = (text: string) => {
     class="flex"
     icon="ri-clipboard-line"
     size="xs"
-    variant="soft"
+    variant="ghost"
+    color="neutral"
     @click="copyToClipboard(messageText)"
   />
 </template>

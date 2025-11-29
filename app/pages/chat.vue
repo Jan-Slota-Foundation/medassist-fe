@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { getTextFromMessage } from "@nuxt/ui/utils/ai";
 import CopyToClipboard from "~/components/AssistantMessage/actions/CopyToClipboard.vue";
-import ExplainToPatientButton from "~/components/AssistantMessage/actions/ExplainToPatientButton.vue";
 import TextToVoiceButton from "~/components/AssistantMessage/actions/TextToVoiceButton.vue";
+import ExamplePromptCard from "~/components/ExamplePromptCard.vue";
+import { getExamplePrompts } from "~/utils/examplePrompts";
 import useChat from "~/composables/useChat";
 
-const { messages, messageInput, handleSubmit } = useChat();
+const { messages, messageInput, handleSubmit, isLoading } = useChat();
+
+const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+};
 </script>
 
 <template>
@@ -21,13 +26,24 @@ const { messages, messageInput, handleSubmit } = useChat();
             variant: 'outline',
           }"
           should-auto-scroll
+          :user="{
+            variant: 'soft',
+            side: 'right',
+          }"
+          :assistant="{
+            avatar: {
+              icon: 'i-lucide-bot',
+              size: 'md',
+              color: 'neutral',
+              variant: 'soft',
+            },
+            variant: 'naked',
+            side: 'left',
+          }"
         >
           <template #content="{ message }">
             <AssistantMessage :message="message">
               <template #actions>
-                <ExplainToPatientButton
-                  :message-text="getTextFromMessage(message)"
-                />
                 <CopyToClipboard :message-text="getTextFromMessage(message)" />
                 <TextToVoiceButton
                   :message-text="getTextFromMessage(message)"
@@ -67,7 +83,7 @@ const { messages, messageInput, handleSubmit } = useChat();
               color="neutral"
             />
           </UTooltip>
-          <UChatPromptSubmit />
+          <UChatPromptSubmit :loading="isLoading" />
         </div>
       </UChatPrompt>
     </template>
