@@ -12,6 +12,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.25.1",
     "@nuxt/content": "^3.8.2",
     "@nuxt/eslint": "1.10.0",
     "@nuxt/hints": "1.0.0-alpha.2",

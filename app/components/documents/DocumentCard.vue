@@ -26,14 +26,21 @@ defineProps<{
         {{ document.name }}
       </h3>
       <p class="text-sm text-gray-500">
-        Updated: {{ new Date(document.updated_at).toLocaleDateString() }}
+        {{
+          $t("documents.updated-at", {
+            date: new Date(document.updated_at).toLocaleDateString(),
+          })
+        }}
       </p>
     </template>
     <div class="text-sm text-gray-600">
       <p>File ID: {{ document.id }}</p>
       <p v-if="document.metadata?.size">
-        Size:
-        {{ ((document.metadata.size as number) / 1024 / 1024).toFixed(2) }} MB
+        {{
+          $t("documents.size", {
+            size: ((document.metadata.size as number) / 1024 / 1024).toFixed(2),
+          })
+        }}
       </p>
     </div>
 

@@ -7,10 +7,6 @@ import { getExamplePrompts } from "~/utils/examplePrompts";
 import useChat from "~/composables/useChat";
 
 const { messages, messageInput, handleSubmit, isLoading } = useChat();
-
-const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text);
-};
 </script>
 
 <template>

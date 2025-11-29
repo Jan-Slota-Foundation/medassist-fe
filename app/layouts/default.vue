@@ -7,6 +7,8 @@ const logUserOut = async () => {
   navigateTo("/login");
 };
 
+const sidebarMode = ref<"drawer" | "slideover" | "modal">("drawer");
+
 const navigationItems = [
   {
     label: $t("navigation.chat"),
@@ -27,8 +29,8 @@ const navigationItems = [
 </script>
 
 <template>
-  <UDashboardGroup display="grid" grid-template-columns="250px 1fr">
-    <UDashboardSidebar>
+  <UDashboardGroup>
+    <UDashboardSidebar :mode="sidebarMode">
       <template v-if="user" #header>
         <UUser
           size="lg"

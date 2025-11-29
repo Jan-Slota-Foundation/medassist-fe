@@ -1,14 +1,32 @@
 <script setup lang="ts">
-import { getTextFromMessage } from "@nuxt/ui/utils/ai";
 import { marked } from "marked";
 
-type ChatMessage = Parameters<typeof getTextFromMessage>[0];
-
+interface ChatMessage {
+  id: string;
+  role: "assistant" | "user";
+  parts: { type: "text"; text: string }[];
+  source_file?: string;
+}
 const props = defineProps<{
   message: ChatMessage;
 }>();
 
-const raw = getTextFromMessage(props.message);
+console.log(props.message);
+
+const isHovered = ref(false);
+
+const sourceFiles = computed(() => {
+  return props.message.source_file
+    ? [
+        {
+          name: props.message.source_file,
+          documentName: props.message.source_file,
+        },
+      ]
+    : [];
+});
+
+const raw = props.message.parts[0]?.text || "";
 const html = marked.parse(raw);
 </script>
 
@@ -17,6 +35,24 @@ const html = marked.parse(raw);
     <div class="whitespace-normal list-disc" v-html="html" />
     <div v-if="message.role === 'assistant'" class="flex gap-2 mt-2">
       <slot name="actions" />
+      <div
+        class="flex"
+        @mouseenter="isHovered = true"
+        @mouseleave="isHovered = false"
+      >
+        <UBadge
+          v-for="sourceFile in sourceFiles"
+          :key="sourceFile.name"
+          size="sm"
+          variant="solid"
+          :class="[
+            'cursor-pointer font-bold px-2 rounded-full border-2 transition-all duration-300 ease-in-out',
+            isHovered ? 'mr-0' : '-ml-6 first:ml-0 last:mr-0',
+          ]"
+          @click="navigateTo(`/documents/${sourceFile.documentName}`)"
+          >{{ sourceFile.name }}</UBadge
+        >
+      </div>
     </div>
   </span>
 </template>

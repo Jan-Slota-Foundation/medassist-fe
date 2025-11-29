@@ -13,6 +13,7 @@
 
   "documents": {
     "updated-at": "Naposledy aktualizováno: {date}",
-    "size": "Velikost: {size} MB"
+    "size": "Velikost: {size} MB",
+    "created-at": "Vytvořeno: {date}"
   }
 }

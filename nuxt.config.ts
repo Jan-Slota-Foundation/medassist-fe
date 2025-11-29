@@ -30,6 +30,9 @@ export default defineNuxtConfig({
     ],
     vueI18n: "./i18n.config.ts",
   },
+  runtimeConfig: {
+    elevenlabsApiKey: process.env.ELEVENLABS_API_KEY,
+  },
   css: ["~/assets/main.css"],
   supabase: {
     redirectOptions: {

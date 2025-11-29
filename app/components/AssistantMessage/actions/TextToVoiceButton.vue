@@ -1,12 +1,12 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   messageText: string;
 }>();
 
 const { convertTextToSpeech, status } = useTextToSpeech();
 
-const handleClick = (messageText: string) => {
-  convertTextToSpeech(messageText);
+const handleClick = () => {
+  convertTextToSpeech(props.messageText);
 };
 </script>
 
@@ -19,7 +19,7 @@ const handleClick = (messageText: string) => {
       variant="ghost"
       color="neutral"
       :loading="status === 'speaking'"
-      @click="handleClick(messageText)"
+      @click="handleClick"
     />
   </UTooltip>
 </template>
