@@ -2,7 +2,8 @@
   "chat": {
     "title": "Četujte s asistentem",
     "placeholder": "Vaše otázka jde sem...",
-    "speechToText": "Komunikace pomocí hlasu"
+    "speechToText": "Komunikace pomocí hlasu",
+    "loading": "Přemýšlím..."
   },
 
   "navigation": {

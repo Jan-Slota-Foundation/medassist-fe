@@ -34,7 +34,7 @@ onUnmounted(() => {
       <UContainer>
         <UChatMessages
           v-if="messages.length > 0"
-          status="streaming"
+          :status="isLoading ? 'submitted' : 'ready'"
           :messages="messages"
           :auto-scroll="{
             color: 'neutral',
@@ -68,6 +68,13 @@ onUnmounted(() => {
                 </template>
               </AssistantMessage>
             </Transition>
+          </template>
+
+          <template #indicator>
+            <div class="flex items-center gap-2 text-muted py-2">
+              <UIcon name="i-lucide-loader-2" class="animate-spin size-4" />
+              <span class="text-sm">{{ $t("chat.loading") }}</span>
+            </div>
           </template>
         </UChatMessages>
 
