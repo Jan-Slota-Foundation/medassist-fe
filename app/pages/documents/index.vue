@@ -2,14 +2,17 @@
 import { watch } from "vue";
 import type { FileObject } from "@supabase/storage-js";
 
+type DocumentWithBucket = FileObject & { bucket: string };
+
 const documentsKey = "remoteDocuments";
 
 const supabase = useSupabaseClient();
 const toast = useToast();
-const inputFiles = ref<File[]>([]);
-const { data: cachedDocuments } = useNuxtData<FileObject[]>(documentsKey);
+const { data: cachedDocuments } =
+  useNuxtData<DocumentWithBucket[]>(documentsKey);
+const documentFilter = ref("");
 
-const fetchRemoteDocuments = async () => {
+const fetchRemoteDocuments = async (): Promise<DocumentWithBucket[]> => {
   const results = await Promise.allSettled([
     supabase.storage.from("pracovni_cesty").list("", { limit: 25 }),
     supabase.storage.from("zhodnoceni_procesu").list("", { limit: 25 }),
@@ -17,7 +20,7 @@ const fetchRemoteDocuments = async () => {
   ]);
 
   const errors: string[] = [];
-  const allDocuments: FileObject[] = [];
+  const allDocuments: DocumentWithBucket[] = [];
 
   results.forEach((result, index) => {
     let bucketName;
@@ -40,7 +43,7 @@ const fetchRemoteDocuments = async () => {
         const documents = (result.value.data ?? []).map((doc) => ({
           ...doc,
           bucket: bucketName,
-        }));
+        })) as DocumentWithBucket[];
         allDocuments.push(...documents);
       }
     } else {
@@ -62,15 +65,28 @@ const {
   data: remoteDocuments,
   error,
   refresh: refreshRemoteDocuments,
-} = await useAsyncData<FileObject[]>(documentsKey, fetchRemoteDocuments, {
-  default: () => cachedDocuments.value ?? [],
-});
+} = await useAsyncData<DocumentWithBucket[]>(
+  documentsKey,
+  fetchRemoteDocuments,
+  {
+    default: () => cachedDocuments.value ?? [],
+  }
+);
 
 if (cachedDocuments.value) {
   onNuxtReady(() => {
     refreshRemoteDocuments();
   });
 }
+
+const filteredDocuments = computed(() => {
+  if (!documentFilter.value) {
+    return remoteDocuments.value ?? [];
+  }
+  return (remoteDocuments.value ?? []).filter((doc) =>
+    doc.name?.toLowerCase().includes(documentFilter.value.toLowerCase())
+  );
+});
 
 watch(
   error,
@@ -91,62 +107,83 @@ watch(
 
 <template>
   <UDashboardPanel class="h-full px-8 pt-8">
-    <UFileUpload
-      v-model="inputFiles"
-      label="Upload documents"
-      multiple
-      position="inside"
-      color="neutral"
-      class="h-48"
-      layout="list"
-      :highlight="true"
-      :interactive="false"
-      description="PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX (max. 50MB)"
-      accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation"
-    >
-      <template #actions="{ open }">
-        <UButton
-          label="Select files"
-          icon="i-lucide-upload"
-          color="neutral"
-          variant="outline"
-          @click="open()"
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold">Dokumenty</h1>
+      <p class="text-sm text-gray-500">
+        Zde najdete všechny dokumenty, z kterých náš asistent čerpá.
+      </p>
+      <div class="mt-4 max-w-md">
+        <UInput
+          v-model="documentFilter"
+          placeholder="Filtrovat dokumenty podle názvu..."
+          class="w-full"
+          icon="i-lucide-search"
+          size="lg"
         />
-      </template>
+      </div>
+    </div>
+    <!-- <UFileUpload
+        v-model="inputFiles"
+        label="Upload documents"
+        multiple
+        position="inside"
+        color="neutral"
+        class="h-48"
+        layout="list"
+        :highlight="true"
+        :interactive="false"
+        description="PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX (max. 50MB)"
+        accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      >
+        <template #actions="{ open }">
+          <UButton
+            label="Select files"
+            icon="i-lucide-upload"
+            color="neutral"
+            variant="outline"
+            @click="open()"
+          />
+        </template>
 
-      <template #files-top="{ open, files }">
-        <div
-          v-if="files?.length"
-          class="mb-2 flex items-center justify-between"
-        >
-          <p class="font-bold">Files ({{ files?.length }})</p>
+        <template #files-top="{ open, files }">
+          <div
+            v-if="files?.length"
+            class="mb-2 flex items-center justify-between"
+          >
+            <p class="font-bold">Files ({{ files?.length }})</p>
 
-          <div class="flex gap-2">
-            <UButton
-              trailing-icon="i-lucide-plus"
-              label="Add more"
-              color="neutral"
-              variant="outline"
-              @click="open()"
-            />
-            <UButton
-              label="Upload"
-              color="primary"
-              trailing-icon="i-lucide-upload"
-            />
+            <div class="flex gap-2">
+              <UButton
+                trailing-icon="i-lucide-plus"
+                label="Add more"
+                color="neutral"
+                variant="outline"
+                @click="open()"
+              />
+              <UButton
+                label="Upload"
+                color="primary"
+                trailing-icon="i-lucide-upload"
+              />
+            </div>
           </div>
-        </div>
-      </template>
-    </UFileUpload>
+        </template>
+      </UFileUpload> -->
 
     <div class="overflow-y-scroll p-4">
-      <UPageGrid v-if="remoteDocuments.length > 0">
+      <UPageGrid v-if="filteredDocuments.length > 0">
         <DocumentsDocumentCard
-          v-for="document in remoteDocuments"
+          v-for="document in filteredDocuments"
           :key="document.id"
           :document="document"
         />
       </UPageGrid>
+      <div
+        v-else-if="remoteDocuments.length > 0"
+        class="text-center py-8 text-gray-500"
+      >
+        Žádné dokumenty nevyhovují filtru "{{ documentFilter }}"
+      </div>
     </div>
   </UDashboardPanel>
 </template>

@@ -49,22 +49,25 @@ onUnmounted(() => {
             avatar: {
               icon: 'i-lucide-bot',
               size: 'md',
-              color: 'neutral',
-              variant: 'soft',
+              color: 'primary',
             },
             variant: 'naked',
             side: 'left',
           }"
         >
           <template #content="{ message }">
-            <AssistantMessage :message="message">
-              <template #actions>
-                <CopyToClipboard :message-text="getTextFromMessage(message)" />
-                <TextToVoiceButton
-                  :message-text="getTextFromMessage(message)"
-                />
-              </template>
-            </AssistantMessage>
+            <Transition name="message-appear" appear>
+              <AssistantMessage :message="message">
+                <template #actions>
+                  <CopyToClipboard
+                    :message-text="getTextFromMessage(message)"
+                  />
+                  <TextToVoiceButton
+                    :message-text="getTextFromMessage(message)"
+                  />
+                </template>
+              </AssistantMessage>
+            </Transition>
           </template>
         </UChatMessages>
 
@@ -104,3 +107,20 @@ onUnmounted(() => {
     </template>
   </UDashboardPanel>
 </template>
+
+<style>
+.message-appear-enter-active,
+.message-appear-leave-active {
+  transition: all 1s ease-out;
+}
+
+.message-appear-enter-from {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+.message-appear-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+</style>

@@ -77,12 +77,29 @@ const isCsv = computed(() => {
   return filename.toLowerCase().endsWith(".csv");
 });
 
+const isPdf = computed(() => {
+  if (typeof filename !== "string") {
+    return false;
+  }
+  return filename.toLowerCase().endsWith(".pdf");
+});
+
 const documentBucket = computed(() => {
   if (!displayDocument.value) {
     return null;
   }
   const document = displayDocument.value as DocumentWithBucket;
   return document.bucket ?? document.bucket_id ?? null;
+});
+
+const pdfUrl = computed(() => {
+  if (!isPdf.value || !displayDocument.value || !documentBucket.value) {
+    return undefined;
+  }
+  const { data } = supabase.storage
+    .from(documentBucket.value)
+    .getPublicUrl(displayDocument.value.name);
+  return data?.publicUrl || undefined;
 });
 
 const parseCsvText = (raw: string): string[][] => {
@@ -281,6 +298,16 @@ const csvTableData = computed<Record<string, string>[]>(() => {
             :columns="csvColumns"
             :data="csvTableData"
             class="max-h-[600px] [&_td]:max-w-[320px] [&_td]:truncate [&_td]:whitespace-nowrap"
+          />
+        </UCard>
+      </div>
+
+      <div v-if="isPdf && pdfUrl" class="flex flex-col gap-4 w-full">
+        <UCard class="flex-1">
+          <iframe
+            :src="pdfUrl"
+            class="w-full h-[600px] border-0"
+            title="PDF Preview"
           />
         </UCard>
       </div>

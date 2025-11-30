@@ -10,7 +10,7 @@ const n8nWebhookUrlProd =
 const n8nWebhookUrlDev =
   "https://mnau.app.n8n.cloud/webhook-test/75d8685b-a80d-4624-8c80-311c271db8cb";
 
-const isProd = false;
+const isProd = true;
 const n8nWebhookUrl = isProd ? n8nWebhookUrlProd : n8nWebhookUrlDev;
 
 const useChat = () => {
@@ -53,7 +53,7 @@ const useChat = () => {
         body: JSON.stringify({
           prompt: message,
           // TODO: rework to keep in session
-          session_id: crypto.randomUUID(),
+          session_id: "ahoj123",
         }),
       });
       console.log(data);

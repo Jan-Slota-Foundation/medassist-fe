@@ -35,11 +35,6 @@ const navigationItems = [
     icon: "i-heroicons-document-text",
     to: "/documents",
   },
-  {
-    label: $t("navigation.settings"),
-    icon: "i-heroicons-cog-6-tooth",
-    to: "/settings",
-  },
 ];
 </script>
 
@@ -65,10 +60,10 @@ const navigationItems = [
           <UButton
             class="w-full"
             color="primary"
-            variant="outline"
+            variant="solid"
             @click="logUserOut"
           >
-            Log out
+            Odhlásit se
           </UButton>
         </div>
       </template>

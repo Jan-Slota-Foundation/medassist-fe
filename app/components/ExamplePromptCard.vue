@@ -7,7 +7,7 @@ defineProps<{
 </script>
 <template>
   <UCard
-    class="hover:bg-slate-800 cursor-pointer"
+    class="hover:bg-blue-200 cursor-pointer"
     @click="setMessageInput(examplePromptText)"
   >
     <p>{{ examplePromptText }}</p>

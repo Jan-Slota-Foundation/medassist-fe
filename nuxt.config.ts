@@ -10,6 +10,9 @@ export default defineNuxtConfig({
     "@nuxt/content",
     "@nuxtjs/i18n",
   ],
+  ui: {
+    colorMode: false,
+  },
   i18n: {
     strategy: "no_prefix",
     defaultLocale: "cs",

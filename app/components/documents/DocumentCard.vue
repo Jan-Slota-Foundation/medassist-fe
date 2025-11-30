@@ -3,13 +3,14 @@ import AskAboutDocumentButton from "./actions/AskAboutDocumentButton.vue";
 import DeleteDocumentButton from "./actions/DeleteDocumentButton.vue";
 import DownloadDocumentButton from "./actions/DownloadDocumentButton.vue";
 
-interface DocumentItem {
+export interface DocumentItem {
   id: string;
   name: string;
   updated_at: string;
   created_at: string;
   last_accessed_at: string;
   metadata: Record<string, unknown>;
+  bucket: string;
 }
 
 defineProps<{
@@ -33,22 +34,22 @@ defineProps<{
         }}
       </p>
     </template>
-    <div class="text-sm text-gray-600">
-      <p>File ID: {{ document.id }}</p>
-      <p v-if="document.metadata?.size">
+    <!-- <div class="text-sm text-gray-600"> -->
+    <!-- <p>File ID: {{ document.id }}</p> -->
+    <!-- <p v-if="document.metadata?.size">
         {{
           $t("documents.size", {
             size: ((document.metadata.size as number) / 1024 / 1024).toFixed(2),
           })
-        }}
-      </p>
-    </div>
+        }} -->
+    <!-- </p> -->
+    <!-- </div> -->
 
     <template #footer>
       <div class="flex gap-2">
-        <DownloadDocumentButton />
+        <DownloadDocumentButton :document="document" />
         <DeleteDocumentButton />
-        <AskAboutDocumentButton />
+        <AskAboutDocumentButton :document="document" />
       </div>
     </template>
   </UCard>
