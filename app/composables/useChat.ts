@@ -5,14 +5,18 @@ interface ChatMessage {
   source_file?: string;
 }
 
-const n8nWebhookUrl =
-  "https://hadedvade.app.n8n.cloud/webhook-test/75d8685b-a80d-4624-8c80-311c271db8cb";
+const n8nWebhookUrlProd =
+  "https://mnau.app.n8n.cloud/webhook/75d8685b-a80d-4624-8c80-311c271db8cb";
+const n8nWebhookUrlDev =
+  "https://mnau.app.n8n.cloud/webhook-test/75d8685b-a80d-4624-8c80-311c271db8cb";
+
+const isProd = false;
+const n8nWebhookUrl = isProd ? n8nWebhookUrlProd : n8nWebhookUrlDev;
 
 const useChat = () => {
   const messages = useState<ChatMessage[]>("chatMessages", () => []);
   const messageInput = useState<string>("chatMessageInput", () => "");
   const isLoading = useState<boolean>("chatIsLoading", () => false);
-  const supabaseUser = useSupabaseUser();
 
   const setIsLoading = (value: boolean) => {
     isLoading.value = value;
@@ -48,7 +52,8 @@ const useChat = () => {
         method: "POST",
         body: JSON.stringify({
           prompt: message,
-          session_id: supabaseUser.value?.session_id,
+          // TODO: rework to keep in session
+          session_id: crypto.randomUUID(),
         }),
       });
       console.log(data);

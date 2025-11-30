@@ -7,10 +7,29 @@ import { getExamplePrompts } from "~/utils/examplePrompts";
 import useChat from "~/composables/useChat";
 
 const { messages, messageInput, handleSubmit, isLoading } = useChat();
+
+const isMobile = ref(false);
+
+const updateScreenSize = () => {
+  isMobile.value = window.innerWidth < 1024; // lg breakpoint
+};
+
+onMounted(() => {
+  updateScreenSize();
+  window.addEventListener("resize", updateScreenSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateScreenSize);
+});
 </script>
 
 <template>
-  <UDashboardPanel class="h-full p-8">
+  <UDashboardPanel class="h-full max-h-screen p-2 md:p-8">
+    <template #header>
+      <UDashboardNavbar v-if="isMobile" />
+    </template>
+
     <template #body>
       <UContainer>
         <UChatMessages
@@ -49,7 +68,7 @@ const { messages, messageInput, handleSubmit, isLoading } = useChat();
           </template>
         </UChatMessages>
 
-        <div v-else class="flex flex-col gap-14 mt-28">
+        <div v-else class="flex flex-col gap-18 mt-14 md:mt-28">
           <h1 class="text-4xl font-semibold text-center">
             {{ $t("chat.title") }}
           </h1>

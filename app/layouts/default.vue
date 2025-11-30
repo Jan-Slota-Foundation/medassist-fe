@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const supabase = useSupabaseClient();
-const user = useSupabaseUser();
 
 const logUserOut = async () => {
   await supabase.auth.signOut();
@@ -8,6 +7,22 @@ const logUserOut = async () => {
 };
 
 const sidebarMode = ref<"drawer" | "slideover" | "modal">("drawer");
+
+// Reactive screen size detection
+const isMobile = ref(false);
+
+const updateScreenSize = () => {
+  isMobile.value = window.innerWidth < 1024; // lg breakpoint
+};
+
+onMounted(() => {
+  updateScreenSize();
+  window.addEventListener("resize", updateScreenSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateScreenSize);
+});
 
 const navigationItems = [
   {
@@ -30,19 +45,15 @@ const navigationItems = [
 
 <template>
   <UDashboardGroup>
-    <UDashboardSidebar :mode="sidebarMode">
-      <template v-if="user" #header>
+    <UDashboardSidebar :mode="isMobile ? 'drawer' : sidebarMode">
+      <template #header>
         <UUser
           size="lg"
           :avatar="{
-            icon: 'i-maki-doctor',
+            icon: 'i-lucide-user',
           }"
-          :name="user?.email ?? 'Anonymous'"
-          :description="user.user_role"
-          :chip="{
-            color: 'primary',
-            position: 'top-left',
-          }"
+          :name="'Anonymous'"
+          :description="'Bez role'"
         />
       </template>
       <template #default>
@@ -50,9 +61,16 @@ const navigationItems = [
         <UNavigationMenu :items="navigationItems" orientation="vertical" />
       </template>
       <template #footer>
-        <UButton color="primary" variant="outline" @click="logUserOut">
-          Log out
-        </UButton>
+        <div class="w-full">
+          <UButton
+            class="w-full"
+            color="primary"
+            variant="outline"
+            @click="logUserOut"
+          >
+            Log out
+          </UButton>
+        </div>
       </template>
     </UDashboardSidebar>
 
