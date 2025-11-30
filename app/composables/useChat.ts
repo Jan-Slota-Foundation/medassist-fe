@@ -26,6 +26,10 @@ const useChat = () => {
     messageInput.value = "";
   };
 
+  const clearChatMessages = () => {
+    messages.value = [];
+  };
+
   const addUserMessage = (message: string) => {
     messages.value.push({
       id: crypto.randomUUID(),
@@ -73,6 +77,7 @@ const useChat = () => {
 
   return {
     messages,
+    clearChatMessages,
     messageInput,
     setMessageInput,
     handleSubmit,

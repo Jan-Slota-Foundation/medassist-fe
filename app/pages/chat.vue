@@ -6,7 +6,8 @@ import ExamplePromptCard from "~/components/ExamplePromptCard.vue";
 import { getExamplePrompts } from "~/utils/examplePrompts";
 import useChat from "~/composables/useChat";
 
-const { messages, messageInput, handleSubmit, isLoading } = useChat();
+const { messages, messageInput, handleSubmit, isLoading, clearChatMessages } =
+  useChat();
 
 const isMobile = ref(false);
 
@@ -78,10 +79,15 @@ onUnmounted(() => {
           </template>
         </UChatMessages>
 
-        <div v-else class="flex flex-col gap-18 mt-14 md:mt-28">
-          <h1 class="text-4xl font-semibold text-center">
-            {{ $t("chat.title") }}
-          </h1>
+        <div v-else class="flex flex-col gap-14 mt-14 md:mt-28">
+          <div class="flex flex-col gap-2">
+            <h1 class="text-4xl font-semibold text-center">
+              {{ $t("chat.title") }}
+            </h1>
+            <h2 class="text-md font-semibold text-center text-blue-500">
+              Zeptejte se na otázku, která vás zajímá.
+            </h2>
+          </div>
           <UPageGrid>
             <ExamplePromptCard
               v-for="prompt in getExamplePrompts()"
@@ -101,11 +107,12 @@ onUnmounted(() => {
         @submit="handleSubmit(messageInput)"
       >
         <div class="flex items-center gap-2">
-          <UTooltip :text="$t('chat.speechToText')" position="top">
+          <UTooltip :text="'Vyprázdnit chat'" position="top">
             <UButton
-              icon="i-heroicons-microphone"
+              icon="i-heroicons-trash"
               variant="ghost"
               color="neutral"
+              @click="clearChatMessages"
             />
           </UTooltip>
           <UChatPromptSubmit :loading="isLoading" />
